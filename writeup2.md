@@ -1,7 +1,7 @@
 # Dirty Cow Exploit
-After setting up the Reverse Shell on user www-data, we can see that the Kernel version of Linux is 3.2.0 which has a massive exploit none as Dirty COW. The exploit consists of taking advantage of a race condition that happens when you try to write on a cache of a file that's just has been deleted and can permit you to write on any files and in our case /etc/passwd. 
+After setting up the Reverse Shell on user www-data, we can see that the Kernel version of Linux is 3.2.0 which has a massive exploit known as Dirty COW. The exploit consists of taking advantage of a race condition that happens when you try to write on a cache of a file that's just has been deleted and can permit you to write on any files and in our case /etc/passwd. 
 
-When logged in as user www-data we can go to /tmp to write our exploit and compile it, i chose the firefart version on [Dirty Cow Ninja](https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs) which takes as the argument the new password of root, we modified the code as to have the user named root:
+When logged in as user www-data we can go to /tmp to write our exploit and compile it, I chose the firefart version on [Dirty Cow Ninja](https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs) which takes as the argument the new password of root, we modified the code as to have the user named root:
 
  1. First we launch ncat with the following flags to listen on any host on port 1234
 
