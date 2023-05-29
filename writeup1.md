@@ -126,6 +126,9 @@ Let's try this email on the webmail we found earlier:
 We try with the same password and it works ! Hourra !!!
 Now we can check a very interessting mail labeled DB ACCESS
 ![DBACCESS](DBACESS)
+
+	root:Fg-'kKXBj87E:aJ$
+
 This seems to be the loggin for phpmyadmin and it's the root user, it works.
 ## Backdoor
 Now we can inject a backdoor in SQL, the only folder that we can write on is forum/templates_c
